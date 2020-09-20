@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Created on Mon Jan  6 13:49:58 2020
+
+@author: Axel LAPEL
+"""
+
+##################################################################
+########## Parametric model for a vertical inner rim #############
+##################################################################
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+if __name__ == "__main__":
+
+    plt.rcParams["xtick.bottom"] = "False"
+    plt.rcParams["ytick.left"] = "False"    
+    plt.rcParams["figure.figsize"] = [6., 6.]
+    
+    # ---------------------- Scaling -------------------------
+    isz     = 512             # image size (in pixels)
+    pscale  = 8.0             # image plate scale (in mas/pixel)
+    rad2deg = 180 / np.pi     # converter
+    
+    # -------------------- Parameters ------------------------
+    inc = np.pi/3.9 * rad2deg # inclination angle (in deg)
+    h   = 12 * pscale         # inner rim thickness (in mas)
+    d   = 35 * pscale         # angular separation (in mas)
+    D   = 90 * pscale         # diameter of the inner rim (in mas)
+    
+    # --------------------- Ellipses -------------------------
+    t  = np.linspace(0, 2*np.pi, 100)
+    e1 = np.array([D/2*np.cos(t), d*np.sin(t)])
+    e2 = np.array([D/2*np.cos(t), -h + d*np.sin(t)])
+    
+    # ------------------- Rotation matrix --------------------
+    R_rot  = np.array([[np.cos(inc), -np.sin(inc)],
+                       [np.sin(inc), np.cos(inc)]])
+    e1_rot = np.zeros((2, e1.shape[1]))
+    e2_rot = np.zeros((2, e2.shape[1]))
+    
+    for i in range(e1.shape[1]):
+        e1_rot[:,i] = np.dot(R_rot, e1[:,i])
+        e2_rot[:,i] = np.dot(R_rot, e2[:,i])
+    
+    # ---------------------- Plotting ------------------------
+    fig, ax = plt.subplots()
+    plt.xlim(-256 * pscale, 255 * pscale)
+    plt.ylim(-256 * pscale, 255 * pscale)
+    ax.plot(e1_rot[0,:], e1_rot[1,:], color="black")
+    ax.plot(e2_rot[0,:], e2_rot[1,:], color="black", lw=3)
+    ax.plot((0,0), marker="*", color="goldenrod", markersize=7)
+    ax.fill_between(e2_rot[0,:], e2_rot[1,:], color="darkred")
+    ax.fill_between(e1_rot[0,:], e1_rot[1,:], color="black")
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    ax.set_facecolor("black")
+    plt.show()

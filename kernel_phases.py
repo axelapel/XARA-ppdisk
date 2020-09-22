@@ -39,7 +39,7 @@ if __name__ == "__main__":
     disk_cube = fits.getdata(path_simu + "disk_imgs.fits")
     calib_cube = fits.getdata(path_simu + "calib_imgs.fits")
 
-    path_model = "./fits_models/vertical_rim.fits"
+    path_model = "./models/vertical_rim.fits"
     model = fits.getdata(path_model)
     # Parameters
     isz = disk_cube.shape[0]
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     pupil = pupil_bool.astype(int)
     discretized_pup = xara.core.create_discrete_model(pupil,
                                                       ppscale,
-                                                      0.16,
+                                                      0.25,
                                                       binary=False,
                                                       tmin=0.1)
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     errors = np.sqrt((np.var(data_disk, axis=0) + np.var(data_calib, axis=0))
                      / (KPO_disk.KPDT[0].shape[0] - 1))
 
-    # Theoretical kernal phase
+    # Theoretical kernel phases
     kphi_th = grid_src_KPD(model, pscale, KPO_disk.kpi, wl)
 
     # Chi2 estimation

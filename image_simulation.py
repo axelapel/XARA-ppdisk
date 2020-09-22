@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     ############################ Model extraction #############################
 
-    file = "./fits_models/vertical_rim.fits"
+    file = "./models/vertical_rim.fits"
     model = fits.getdata(file)
     gsz = np.shape(model)[0]
 
@@ -98,6 +98,7 @@ if __name__ == "__main__":
     scexao = xs.instrument("SCExAO")
     scexao.atmo.update_screen(correc=10, rms=200)
     PSF = scexao.snap()
+    scexao.start()
     dim_1, dim_2 = np.shape(PSF)
     # TODO : check for better parameters (correc and rms)
 
@@ -105,7 +106,9 @@ if __name__ == "__main__":
     N = 100  # Number of frames
     PSF_cube = np.zeros((N, dim_1, dim_2))
     for i in range(N):
+        scexao.atmo.update_screen(correc=10, rms=200)
         PSF_cube[i] = scexao.snap()
+    scexao.stop()
 
     # --------------------------------- Images ---------------------------------
 

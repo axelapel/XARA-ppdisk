@@ -88,7 +88,7 @@ if __name__ == "__main__":
     height = 100             # true height of inner rim (in mas)
     inc = 60                 # inclination angle (in deg)
     rad = 450                # radius of the gap (in mas)
-    cont = 1e-2              # contrast (ratio <1)
+    cont = 1e-1              # contrast (ratio <1)
 
     # TODO : check the actual relevant parameters to evaluate from Radmc3d
     # TODO : check if there would be a better disk to observe from the METEOR with

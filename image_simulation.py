@@ -7,7 +7,6 @@ import xaosim as xs
 from astropy.io import fits
 from scipy import signal
 
-
 # Aliases
 fft = np.fft.fft2
 ifft = np.fft.ifft2
@@ -96,17 +95,16 @@ if __name__ == "__main__":
 
     # PSF with turbulence
     scexao = xs.instrument("SCExAO")
-    scexao.atmo.update_screen(correc=10, rms=200)
+    scexao.atmo.update_screen(correc=10, rms=250)
     PSF = scexao.snap()
     scexao.start()
     dim_1, dim_2 = np.shape(PSF)
-    # TODO : check for better parameters (correc and rms)
 
     # PSF cube with turbulence
     N = 100  # Number of frames
     PSF_cube = np.zeros((N, dim_1, dim_2))
     for i in range(N):
-        scexao.atmo.update_screen(correc=10, rms=200)
+        scexao.atmo.update_screen(correc=10, rms=250)
         PSF_cube[i] = scexao.snap()
     scexao.stop()
 
@@ -129,3 +127,15 @@ if __name__ == "__main__":
     hdu_star = fits.PrimaryHDU(star_imgs)
     hdu_disk.writeto(out1, overwrite=True)
     hdu_star.writeto(out2, overwrite=True)
+
+    # Convolution relation
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10, 4))
+    ax1.imshow(model**0.3, cmap="hot", label="Object")
+    ax1.plot(int(gsz/2), int(gsz/2), marker="*",
+             color="goldenrod", markersize=7)
+    ax2.imshow(PSF**0.3, cmap="hot")
+    ax3.imshow(disk_imgs[0]**0.3, cmap="hot")
+    ax1.set_title("Object")
+    ax2.set_title("SCExAO PSF")
+    ax3.set_title("Image")
+    fig.savefig("plots/convolution.png", transparent=True)
